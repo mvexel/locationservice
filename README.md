@@ -6,8 +6,9 @@ A minimalist location posting service using Flask
 Set it up
 ---------
 
-    git clone git@github.com:mvexel/locationservice.git
+    git clone https://github.com/mvexel/locationservice.git
     mkvirtualenv locationservice
+    cd locationservice
     pip install -r requirements.txt
 
 Run it 
