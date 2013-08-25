@@ -35,19 +35,20 @@ def generate_tables():
     conn = sqlite3.connect(sqlite_path)
     c = conn.cursor()
     c.execute('drop table if exists locations')
-    c.execute('create table locations (tstamp date, lon real, lat real)') 
+    c.execute('create table locations (tstamp date, ip text, lon real, lat real)') 
     return jsonify({'result':'OK'});
 
-@app.route('/location/<lon>/<lat>', methods=['POST'])
+@app.route('/<lon>/<lat>', methods=['POST'])
 def post_location(lon, lat):
     app.logger.debug(lon, lat)
     conn = sqlite3.connect(sqlite_path)
     c = conn.cursor()
-    c.execute('insert into locations values (?, ?, ?)' , (datetime.datetime.now(), lon, lat))
+    c.execute('insert into locations values (?, ?, ?, ?)' , (datetime.datetime.now(), request.remote_addr, lon, lat))
     conn.commit()
     return jsonify({'result':'OK'});
 
-@app.route('/locations', methods=['GET'])
+@app.route('/list', methods=['GET'])
+@requires_auth
 def get_locations():
     conn = sqlite3.connect(sqlite_path)
     c = conn.cursor()
@@ -55,4 +56,4 @@ def get_locations():
     return jsonify({'locations': locations})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
