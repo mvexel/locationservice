@@ -4,7 +4,7 @@ import datetime, time
 from pysqlite2 import dbapi2 as sqlite3
 
 app = Flask(__name__)
-sqlite_path = '/tmp/locations'
+app.config.from_object('locationservice.settings')
 
 # http://flask.pocoo.org/snippets/8/
 def requires_auth(f):
@@ -27,21 +27,21 @@ def check_auth(username, password):
     """This function is called to check if a username /
     password combination is valid.
     """
-    return username == 'admin' and password == 'secret'
+    return username == app.config['HTTP_USER'] and password == app.config['HTTP_PASSWORD']
 
 @app.route('/generate_tables', methods=['GET'])
 @requires_auth
 def generate_tables():
-    conn = sqlite3.connect(sqlite_path)
+    conn = sqlite3.connect(app.config['SQLITE_PATH'])
     c = conn.cursor()
     c.execute('drop table if exists locations')
     c.execute('create table locations (tstamp date, ip text, lon real, lat real)') 
     return jsonify({'result':'OK'});
 
-@app.route('/<lon>/<lat>', methods=['POST'])
+@app.route('/<lon>/<lat>', methods=['POST','GET'])
 def post_location(lon, lat):
     app.logger.debug(lon, lat)
-    conn = sqlite3.connect(sqlite_path)
+    conn = sqlite3.connect(['SQLITE_PATH'])
     c = conn.cursor()
     c.execute('insert into locations values (?, ?, ?, ?)' , (datetime.datetime.now(), request.remote_addr, lon, lat))
     conn.commit()
@@ -50,7 +50,7 @@ def post_location(lon, lat):
 @app.route('/list', methods=['GET'])
 @requires_auth
 def get_locations():
-    conn = sqlite3.connect(sqlite_path)
+    conn = sqlite3.connect(app.config['SQLITE_PATH'])
     c = conn.cursor()
     locations = [row for row in c.execute('select * from locations')]
     return jsonify({'locations': locations})
