@@ -6,6 +6,20 @@ from pysqlite2 import dbapi2 as sqlite3
 app = Flask(__name__)
 app.config.from_object('locationservice.settings')
 
+if not app.debug:
+    import logging
+    from logging.handlers import TimedRotatingFileHandler
+    file_handler = TimedRotatingFileHandler(
+        '/home/pi/log.txt',
+        'D')
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s '
+        '[in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(file_handler)
+    app.logger.debug('logging enabled')
+
 # http://flask.pocoo.org/snippets/8/
 def requires_auth(f):
     @wraps(f)
@@ -41,7 +55,7 @@ def generate_tables():
 @app.route('/<lon>/<lat>', methods=['POST','GET'])
 def post_location(lon, lat):
     app.logger.debug(lon, lat)
-    conn = sqlite3.connect(['SQLITE_PATH'])
+    conn = sqlite3.connect(app.config['SQLITE_PATH'])
     c = conn.cursor()
     c.execute('insert into locations values (?, ?, ?, ?)' , (datetime.datetime.now(), request.remote_addr, lon, lat))
     conn.commit()
@@ -56,4 +70,4 @@ def get_locations():
     return jsonify({'locations': locations})
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run()
