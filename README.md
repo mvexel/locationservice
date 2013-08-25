@@ -24,10 +24,10 @@ Install the python requirements:
 
     pip install -r requirements.txt
     
-Edit the file `locationservice.conf` and `locationservice.wsgi` so that the path corresponds to where the locationservice app and virtualenv live.
+Edit the file `apache/locationservice.conf` and `wsgi/locationservice.wsgi` so that the path corresponds to where the locationservice app and virtualenv live.
 Then add symlink it into the Apache `conf.d` directory:
 
-    sudo ln -s /home/pi/locationservice/locationservice.conf /etc/apache2/sites-enabled/
+    sudo ln -s /path/to/locationservice/wsgilocationservice.conf /etc/apache2/sites-enabled/
     
 Restart Apache:
 
