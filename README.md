@@ -14,18 +14,21 @@ Clone this repo:
 
     git clone https://github.com/mvexel/locationservice.git
     
-Create a virtualenv to run this in and add the current path to it:
+Create a virtualenv to run this in:
 
     mkvirtualenv locationservice
-    cd locationservice
-    add2virtualenv .
     
-Install the python requirements:     
+Create a configuration file (or copy the example and adapt to your environment)
 
-    pip install -r requirements.txt
-    
+    cd locationservice
+    cp locationservice/settings_example.py locationservice/settings.py
+
+Install the app and dependencies:
+
+    python setup.py install
+
 Edit the file `apache/locationservice.conf` and `wsgi/locationservice.wsgi` so that the path corresponds to where the locationservice app and virtualenv live.
-Then add symlink it into the Apache `conf.d` directory:
+Then add symlink it into the Apache `sites-enabled` directory:
 
     sudo ln -s /path/to/locationservice/wsgilocationservice.conf /etc/apache2/sites-enabled/
     
@@ -33,10 +36,10 @@ Restart Apache:
 
     sudo service apache2 restart
 
-Run it 
-------
+Finally, generate the SQLite database file:
 
     curl -u admin:secret http://localhost/loc/generate_tables
+
 
 Use it
 ------
