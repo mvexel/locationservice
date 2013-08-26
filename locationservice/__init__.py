@@ -10,7 +10,7 @@ if not app.debug:
     import logging
     from logging.handlers import TimedRotatingFileHandler
     file_handler = TimedRotatingFileHandler(
-        '/home/pi/log.txt',
+        app.config['LOG_PATH'],
         'D')
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s '
